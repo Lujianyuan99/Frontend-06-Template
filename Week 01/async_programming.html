@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tic Tac Toe</title>
+		<style type="text/css">
+		div{
+			background: grey;
+			display: inline-block;
+			margin:30px;
+			width:100px;
+			height:100px;
+			border-radius: 50px;
+		}
+
+		
+		/*<p class="green light">
+    		.green.light这个class生效
+		</p>*/
+		.green.light{   
+			background-color:green;
+		}
+		.yellow.light{
+			background-color:yellow;
+		}
+		.red.light{
+			background-color:red;
+		}
+
+
+	</style>
+</head>
+<body>
+<div class="green"></div>
+<div class="yellow"></div>
+<div class="red"></div>
+<button id="next">next</button>
+
+<script>
+	function green(){
+		var lights = document.getElementsByTagName("div");//获得多个element
+		for(let i=0;i<3;i++){
+			lights[i].classList.remove("light");
+		}
+		
+		document.getElementsByClassName("green")[0].classList.add("light")  //现在相当于是两个class
+
+	}
+
+	function red(){
+		var lights = document.getElementsByTagName("div");//获得多个element
+		for(let i=0;i<3;i++){
+			lights[i].classList.remove("light");
+		}
+		document.getElementsByClassName("red")[0].classList.add("light")
+	}
+
+	function yellow(){
+		var lights = document.getElementsByTagName("div");//获得多个element
+		for(let i=0;i<3;i++){
+			lights[i].classList.remove("light");
+		}
+		document.getElementsByClassName("yellow")[0].classList.add("light")
+	}
+
+	function go(){
+		green();
+		setTimeout(function(){
+			yellow();
+			setTimeout(function(){
+				red();
+				setTimeout(function(){
+					go();
+				},500)
+			},200)
+		},1000)
+	}
+
+	function sleep(t){
+		return new Promise(function(resolve,reject){
+			setTimeout(resolve,t);
+		})
+	}
+
+	function happen(element,eventName){
+		console.log(element)
+		return new Promise(function(resolve,reject){
+			element.addEventListener(eventName,resolve,{once:true})
+		})
+	}
+
+	function go2(){
+		green();
+		sleep(1000).then(function(){
+			yellow();
+			return sleep(200);
+		}).then(function(){
+			red();
+			return sleep(500)
+		}).then(function(){
+			go2();
+		})
+	}
+
+	async function go3(){
+		while(true){
+			green();
+			await sleep(1000); //await是等待一个promise结束
+			yellow();
+			await sleep(200);
+			red();
+			await sleep(500);
+		}
+	}
+
+		async function go4(){
+		while(true){
+			green();
+			await happen(document.getElementById("next"),"click"); //await是等待一个promise结束
+			yellow();
+			await happen(document.getElementById("next"),"click");
+			red();
+			await happen(document.getElementById("next"),"click");
+		}
+	}
+
+
+
+</script>
+</body>
+</html>

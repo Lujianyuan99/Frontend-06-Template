@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tic Tac Toe</title>
+		<style type="text/css">
+		.cell{
+			width:100px;
+			height:100px;
+			/*默认是middle-base对齐*/
+			background-color:green;
+			display: inline-block; 
+			border: solid 1px white;
+			/*middle对齐*/
+			vertical-align: middle;
+
+			/*定义棋盘里面的符号位置大小*/
+			/*和父元素高度相同的line-height，能够帮助我们垂直居中*/
+			line-height: 100px;
+			font-size: 50px;
+			/*水平居中*/
+			text-align:center;
+			color:red;
+		}
+	</style>
+</head>
+<body>
+<div id="board"></div>
+
+
+	<script>
+		let pattern =[
+		0,2,0,
+		0,1,0,
+		0,0,0
+		]
+
+		let rival =1;
+
+		function show(){
+			var board= document.getElementById("board");
+
+
+			board.innerHTML="";//把borad里面的内容清空
+			for(let i=0; i<9;i++){
+				// for(let j=0;j<3;j++){
+					let cell = document.createElement("div");
+					cell.classList.add("cell");
+					cell.innerText =
+						pattern[i]==2 ? "●":
+						pattern[i]==1 ? "×":"";
+						cell.addEventListener("click",()=>move(i))
+					board.appendChild(cell);
+				// }
+				if(i%3==2){
+					board.appendChild(document.createElement("br"));
+				}
+				
+				}
+
+		}
+
+		function move(position){
+			pattern[position] = rival;
+			if(check(pattern,rival)){
+				alert(rival==1?"× is the winner":"● is the winner");
+			}
+			rival = 3-rival;
+			show();
+			if(willWin(pattern,rival)){
+				console.log(rival==1?"× will win":"● will win");
+			}
+			console.log(bestChoice(pattern,rival))
+			computerMove();
+		}
+
+
+		function computerMove(){
+			let choice = bestChoice(pattern,rival);
+			if(choice.point){
+				pattern[choice.point[1]*3+choice.point[0]] = rival;
+			}
+			if(check(pattern,rival)){
+				alert(rival==1?"× is the winner":"● is the winner");
+			}
+			rival = 3-rival;
+			show();
+
+		}
+
+
+		function check(pattern,rival){
+
+			for(let i=0;i<3;i++){
+				let win =true;
+				for(let j=0;j<3;j++){
+					if(pattern[i*3+j]!=rival){
+						win = false;
+					}
+				}
+				if(win){
+						return true;
+				}
+			}
+
+			for(let i=0;i<3;i++){
+				let win =true;
+				for(let j=0;j<3;j++){
+					if(pattern[i+j*3]!=rival){
+						win = false;
+					}
+				}				
+				if(win){
+						return true;
+				}
+			}
+			let win =true;
+			for(let j=0;j<3;j++){
+				if(pattern[2+j*2]!=rival){
+						win = false;
+				}
+			}
+			if(win){
+						return true;
+				}
+
+			win =true;
+			for(let j=0;j<3;j++){
+				if(pattern[4+j*4]!=rival){
+						win = false;
+				}
+			}
+			if(win){
+						return true;
+				}
+			return false;
+			
+		}
+
+
+		function clone(pattern){
+			return JSON.parse(JSON.stringify(pattern));
+			return Object.create(pattern);//可以复制继承原来pattern的方法和数据
+		}
+		function willWin(pattern,rival){
+			for(let i=1;i<3;i++){
+				for(let j=0;j<3;j++){
+					if(pattern[i*3+j]){
+						continue;}
+					let temp = clone(pattern);
+					temp[i*3+j]=rival;
+					if(check(temp,rival)){
+						return i*3+j;
+					}
+				}
+			}
+			return null;
+		}
+
+
+		function bestChoice(pattern,rival){
+			let p;
+			if(p=willWin(pattern,rival)){
+				return{
+					point: p,
+					result: 1
+				}
+			}
+			let result = -2;
+			let point =null;
+			outer:for(let i=0;i<3;i++){
+				for(let j=0;j<3;j++){
+					if(pattern[i*3+j] !==0){
+						continue;
+					}
+					let temp = clone(pattern);
+					temp[i*3+j] = rival; //这一步棋已经下了
+					let r = bestChoice(temp,3-rival).result; //预先知道对方最好的结果，我们最差的结果
+					if(-r > result){ //如果最差的结果比我们现在的result好
+						result = -r;
+						point = [j,i];
+					}
+					if(result==1){
+						break outer;
+					}
+				}
+			}
+			return{
+				point:point,
+				result:point? result:0
+			}
+		}
+
+		show()
+		console.log(bestChoice(pattern,rival))
+	</script>
+</body>
+</html>
