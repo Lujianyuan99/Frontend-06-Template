@@ -1,0 +1,42 @@
+<script>
+    let callbacks=[];
+
+    let object={
+        a:1,
+        b:2
+    }
+
+
+    // let po = new Proxy(object,{
+    //     set(obj,prop,val){ //定义钩子函数
+    //         console.log(obj,prop,val);
+    //     }
+    // })
+
+    let po = reactive(object); //po如果是普通对象，任何代码不会执行
+
+    effect(() => {
+        console.log(po.a,po);
+    })//相当于effect函数执行
+
+    function effect(callback){
+        callbacks.push(callback);
+    }
+
+    function reactive(object){
+        return new Proxy(object,{
+            set(obj,prop,val){ //定义钩子函数
+                obj[prop]=val;
+                // console.log(obj,prop,val);
+                for( let callback of callbacks){
+                    callback();
+                }
+                return obj[prop];
+            },
+            get(obj,prop){
+                console.log(obj,prop);
+                return obj[prop];
+            }
+        })
+    }
+</script>
